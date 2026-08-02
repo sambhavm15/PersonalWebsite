@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
-import { existsSync } from "node:fs";
-import { join } from "node:path";
+import Link from "next/link";
 import SectionHeader from "@/components/SectionHeader";
-import Gallery from "@/components/Gallery";
-import { about, gallery } from "@/data/content";
+import { about } from "@/data/content";
 
 export const metadata: Metadata = {
   title: "About — Sambhav Mehta",
@@ -11,10 +9,6 @@ export const metadata: Metadata = {
 };
 
 export default function AboutPage() {
-  const hasRealImage = gallery.map((img) =>
-    existsSync(join(process.cwd(), "public", img.src.replace(/^\//, "")))
-  );
-
   return (
     <div className="container-editorial pt-16 pb-24 md:pt-24 md:pb-32">
       <SectionHeader
@@ -38,27 +32,46 @@ export default function AboutPage() {
               {p}
             </p>
           ))}
-        </div>
-      </div>
 
-      <section className="mt-24 md:mt-32">
-        <div className="reveal grid gap-6 md:grid-cols-12 md:items-end">
-          <div className="md:col-span-4">
-            <p className="section-number">04.a / Gallery</p>
-            <p className="mt-3 text-sm text-muted">
-              A small collection. Click any frame to enlarge — arrow keys to
-              browse, escape to close.
-            </p>
+          <div className="reveal mt-10">
+            <Link
+              href="/gallery"
+              className="group inline-flex items-center gap-3 text-accent"
+            >
+              <span className="link-underline">See the photography & art</span>
+              <span
+                aria-hidden
+                className="transition-transform duration-300 ease-editorial group-hover:translate-x-1"
+              >
+                →
+              </span>
+            </Link>
           </div>
-          <h2 className="md:col-span-8 font-display text-3xl md:text-5xl leading-[1.05]">
-            Notes on light.
-          </h2>
         </div>
 
-        <div className="mt-10 md:mt-14">
-          <Gallery images={gallery} hasRealImage={hasRealImage} />
-        </div>
-      </section>
+        <aside className="reveal md:col-span-3">
+          <div className="border-t border-paper/10 pt-6">
+            <p className="section-number">Off the clock</p>
+            <ul className="mt-4 space-y-3 text-sm text-paper/85">
+              <li className="flex items-baseline gap-3">
+                <span aria-hidden className="text-accent">✦</span> Night photography
+              </li>
+              <li className="flex items-baseline gap-3">
+                <span aria-hidden className="text-accent">✦</span> Drawing &amp; sketching
+              </li>
+              <li className="flex items-baseline gap-3">
+                <span aria-hidden className="text-accent">✦</span> Cooking &amp; new recipes
+              </li>
+              <li className="flex items-baseline gap-3">
+                <span aria-hidden className="text-accent">✦</span> Rock climbing &amp; boxing
+              </li>
+              <li className="flex items-baseline gap-3">
+                <span aria-hidden className="text-accent">✦</span> Getting lost in museums
+              </li>
+            </ul>
+          </div>
+        </aside>
+      </div>
     </div>
   );
 }

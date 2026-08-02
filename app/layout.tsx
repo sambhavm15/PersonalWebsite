@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Fraunces, Inter } from "next/font/google";
 import Nav from "@/components/Nav";
-import Footer from "@/components/Footer";
 import RevealProvider from "@/components/RevealProvider";
 import "./globals.css";
 
@@ -53,7 +52,6 @@ export default function RootLayout({
         <RevealProvider>
           <Nav />
           <main id="main">{children}</main>
-          <Footer />
         </RevealProvider>
       </body>
     </html>

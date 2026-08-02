@@ -39,6 +39,7 @@ export const navLinks: NavLink[] = [
   { label: "Work", href: "/work" },
   { label: "Projects", href: "/projects" },
   { label: "Skills", href: "/skills" },
+  { label: "Gallery", href: "/gallery" },
   { label: "About", href: "/about" },
 ];
 
@@ -58,8 +59,15 @@ export const hero = {
   subline: "Product management · applied AI · a soft spot for good design.",
   ctaLabel: "Let's connect",
   ctaHref: site.linkedin,
-  currently:
-    "incoming Technical PM Intern at MongoDB · founder of Diamond Consulting · based in Fremont, CA.",
+  // Rotating "currently" strip — cycles every ~2.5s. Keep the phrasing parallel
+  // (gerund + short object) so the swap reads as one rhythm.
+  currentlyItems: [
+    "Building products at MongoDB",
+    "Chalking up for a climb",
+    "Chasing light after dark",
+    "Sketching whatever sticks",
+    "Trading jabs at the boxing gym",
+  ] as const,
 };
 
 export const work: WorkEntry[] = [
@@ -193,5 +201,30 @@ export const gallery: GalleryImage[] = Array.from({ length: 12 }, (_, i) => {
     src: `/gallery/${n}.jpg`,
     alt: `Photograph ${n}`,
     aspect: galleryAspects[i] ?? "landscape",
+  };
+});
+
+const artAspects: GalleryImage["aspect"][] = [
+  "portrait",
+  "square",
+  "portrait",
+  "landscape",
+  "square",
+  "portrait",
+  "landscape",
+  "square",
+  "portrait",
+  "landscape",
+  "square",
+  "portrait",
+];
+
+// Drawings / art. Files go in /public/art/ as 01.jpg–12.jpg (or .png).
+export const art: GalleryImage[] = Array.from({ length: 12 }, (_, i) => {
+  const n = String(i + 1).padStart(2, "0");
+  return {
+    src: `/art/${n}.jpg`,
+    alt: `Drawing ${n}`,
+    aspect: artAspects[i] ?? "portrait",
   };
 });
