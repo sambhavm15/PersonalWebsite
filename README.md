@@ -25,7 +25,14 @@ npm run lint     # next lint
 - **All copy** lives in [`data/content.ts`](./data/content.ts). Hero, work
   entries, projects, skills, awards, gallery captions — edit them there
   without touching components.
-- **Nav / footer links** — same file (`site`, `navLinks`, `socials`).
+- **Nav links** — same file (`site`, `navLinks`, `socials`).
+- **"Currently" strip** — `hero.currentlyItems` in `data/content.ts` (rotates
+  every ~2.5s; keep phrasing parallel).
+- **Internship case studies** — all three interactive one-pagers (MongoDB, GI
+  Partners, Alumni Ventures) live in
+  [`data/caseStudies.ts`](./data/caseStudies.ts) as typed data. Edit stats,
+  pain points, sprints, KPIs, tradeoffs there — the components render whatever
+  you put in.
 - **Fonts** — swap in `app/layout.tsx` (currently Fraunces + Inter via
   `next/font/google`).
 - **Theme tokens** — palette, type scale, spacing, easings in
@@ -34,22 +41,51 @@ npm run lint     # next lint
 
 ## Assets you still need to add
 
-Drop these files into `/public/` (create the folders if they don't exist).
-Until you do, the site renders tasteful gray placeholders in the correct
-aspect ratios, so nothing looks broken.
+Drop these files into `/public/`. Until you do, the site renders tasteful gray
+placeholders in the correct aspect ratios, so nothing looks broken.
 
 | Path | Used by | Notes |
 | ---- | ------- | ----- |
 | `/public/hero.jpg` | Home hero portrait | 4:5 portrait works best. |
-| `/public/resume.pdf` | Nav + footer "Résumé ↗" link | Filename must be exactly `resume.pdf`. |
-| `/public/gallery/01.jpg` … `/public/gallery/12.jpg` | About-page gallery | Any mix of orientations; the layout is masonry. Filenames must match `01.jpg`–`12.jpg`. |
+| `/public/resume.pdf` | Nav "Résumé ↗" link | Filename must be exactly `resume.pdf`. |
+| `/public/gallery/01.jpg` … `12.jpg` | Gallery → **Photography** tab | Any mix of orientations; masonry layout. Names must be `01.jpg`–`12.jpg`. |
+| `/public/art/01.jpg` … `12.jpg` | Gallery → **Art** tab | Your drawings. `.jpg` or `.png` both work. Names `01`–`12`. |
 
-To add more gallery images, extend `gallery` in `data/content.ts` and drop
-matching files into `/public/gallery/`. To add captions, set the `caption`
-field on any `GalleryImage`.
+To add **more** images, extend the `gallery` or `art` arrays in
+`data/content.ts` and drop matching files into the folder. To add captions,
+set the `caption` field on any entry.
 
 Optional Open Graph image: add `/public/og.jpg` and reference it in
 `app/layout.tsx`'s `metadata.openGraph.images`.
+
+## Adding photos & art — WITHOUT going through this chat
+
+Images belong in the git repo, not in a chat window. Uploading them to a
+conversation doesn't put them on the site and just burns context. The right
+flow, all on your Mac:
+
+```bash
+cd ~/PersonalWebsite
+git checkout claude/portfolio-website-setup-7ozeh2
+git pull                          # get the latest code
+
+# add your files (Finder drag-and-drop into these folders also works):
+#   public/gallery/01.jpg … 12.jpg   (photography)
+#   public/art/01.jpg … 12.jpg       (drawings)
+#   public/hero.jpg, public/resume.pdf
+
+npm run dev                       # preview at localhost:3000, tweak as needed
+
+git add public
+git commit -m "Add photos, art, hero, and resume"
+git push
+```
+
+That's it — once deployed on Vercel, every push rebuilds the live site with
+your images. No file-size or count limits from the chat, and nothing to
+re-upload here. Tips: keep each image roughly < 1–2 MB (Next.js optimizes them
+at build), and you can batch-rename in Finder (select all → right-click →
+Rename) to get the `01.jpg … 12.jpg` sequence quickly.
 
 ## Deploy on Vercel
 
@@ -86,34 +122,53 @@ None required — the site is fully static. Add any future env vars in
 - Palette: `#0E0E10` ink, `#F5F1E8` paper, `#FF4D3D` vermilion accent
   (used sparingly), `#8A8578` warm grey for metadata.
 - Type: Fraunces (display serif) + Inter (grotesque body).
-- Motion: subtle scroll-reveal fade/translate, rotating hero word, card
-  hover lift. Fully disabled under `prefers-reduced-motion`.
+- Motion: scroll-reveal fade/translate, rotating hero word, rotating
+  "Currently" strip, animated stat counters, card hover lift. Fully disabled
+  under `prefers-reduced-motion`.
 
 ## Accessibility
 
-- Semantic landmarks (`<header>`, `<nav>`, `<main>`, `<footer>`), skip
-  link, keyboard-navigable nav and gallery lightbox (Esc closes, arrows
-  browse), visible focus rings, alt text on every image, respects
-  `prefers-reduced-motion`.
+- Semantic landmarks (`<header>`, `<nav>`, `<main>`), skip link,
+  keyboard-navigable nav, case-study accordions/steppers, and gallery lightbox
+  (Esc closes, arrows browse), visible focus rings, alt text on every image,
+  respects `prefers-reduced-motion`.
+
+## Pages
+
+- **Home** — hero with rotating descriptor + rotating "Currently" strip.
+- **Work** — one long scroll: three interactive case studies (MongoDB, GI
+  Partners, Alumni Ventures) rebuilt from the one-pagers, plus a compact
+  Admit AI entry. Each has animated stat counters, tap-to-expand pain points,
+  an interactive sprint stepper, and a Goal-vs-Result KPI panel (GI Partners
+  also has an interactive RAG pipeline diagram).
+- **Projects** — Diamond Consulting, Blue Origin, awards.
+- **Skills** — grouped toolkit grid.
+- **Gallery** — Photography / Art tabs, masonry grid + keyboard lightbox.
+- **About** — the story, plus a link into the gallery.
 
 ## Project structure
 
 ```
 app/
-  layout.tsx         # fonts, metadata, nav + footer shell
+  layout.tsx         # fonts, metadata, nav shell (no footer)
   globals.css        # Tailwind layers, reveal + reduced-motion
   page.tsx           # Home
-  work/page.tsx      # 01 / Work
+  work/page.tsx      # 01 / Work — long-scroll case studies
   projects/page.tsx  # 02 / Projects & Leadership
   skills/page.tsx    # 03 / Toolkit
-  about/page.tsx     # 04 / About + gallery
+  gallery/page.tsx   # 05 / Gallery — Photography + Art tabs
+  about/page.tsx     # 04 / About
 components/
-  Nav.tsx, Footer.tsx, SectionHeader.tsx
-  HeroImage.tsx, RotatingWord.tsx, SocialIcons.tsx
-  Gallery.tsx        # masonry + keyboard lightbox
-  RevealProvider.tsx # IntersectionObserver-based scroll-reveal
+  Nav.tsx, SectionHeader.tsx, HeroImage.tsx
+  RotatingWord.tsx, CurrentlyStrip.tsx, SocialIcons.tsx
+  Gallery.tsx, GalleryTabs.tsx   # masonry + keyboard lightbox + tabs
+  RevealProvider.tsx             # IntersectionObserver scroll-reveal
+  case-study/
+    CaseStudy.tsx    # composes the interactive one-pager sections
+    useCountUp.ts    # animated, reduced-motion-aware counters
 data/
-  content.ts         # ← edit all copy here
+  content.ts         # ← edit site copy, nav, gallery/art lists here
+  caseStudies.ts     # ← edit the three internship case studies here
 public/
-  favicon.svg        # (add hero.jpg, resume.pdf, gallery/*.jpg)
+  favicon.svg        # (add hero.jpg, resume.pdf, gallery/*, art/*)
 ```

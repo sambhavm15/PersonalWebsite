@@ -1,7 +1,7 @@
-import Link from "next/link";
 import HeroImage from "@/components/HeroImage";
 import RotatingWord from "@/components/RotatingWord";
 import SocialIcons from "@/components/SocialIcons";
+import CurrentlyStrip from "@/components/CurrentlyStrip";
 import { hero } from "@/data/content";
 
 export default function HomePage() {
@@ -57,55 +57,9 @@ export default function HomePage() {
 
       <section className="border-y border-paper/10 bg-paper/[0.02]">
         <div className="container-editorial py-8 md:py-10">
-          <div className="reveal flex flex-col gap-3 md:flex-row md:items-center md:gap-6">
-            <span className="section-number shrink-0">Currently</span>
-            <p className="text-paper/85 text-base md:text-lg">
-              {hero.currently}
-            </p>
+          <div className="reveal">
+            <CurrentlyStrip items={hero.currentlyItems} />
           </div>
-        </div>
-      </section>
-
-      <section className="container-editorial py-24 md:py-32">
-        <div className="grid gap-10 md:grid-cols-12">
-          <div className="md:col-span-5">
-            <p className="reveal section-number">Table of contents</p>
-            <p className="reveal mt-4 font-display text-4xl md:text-5xl leading-[1.05]">
-              Four ways to <em className="not-italic text-accent">read</em> this
-              site.
-            </p>
-          </div>
-          <ul className="md:col-span-7 divide-y divide-paper/10 border-y border-paper/10">
-            {[
-              { n: "01", label: "Work", href: "/work", note: "The résumé, but with context." },
-              { n: "02", label: "Projects", href: "/projects", note: "Things I've made and led." },
-              { n: "03", label: "Skills", href: "/skills", note: "What I actually use." },
-              { n: "04", label: "About", href: "/about", note: "Beyond the résumé — with a camera." },
-            ].map((row) => (
-              <li key={row.href} className="reveal group">
-                <Link
-                  href={row.href}
-                  className="grid grid-cols-12 items-baseline gap-4 py-6 transition-colors"
-                >
-                  <span className="col-span-2 text-xs uppercase tracking-[0.2em] text-muted">
-                    {row.n}
-                  </span>
-                  <span className="col-span-6 md:col-span-5 font-display text-2xl md:text-3xl group-hover:text-accent transition-colors">
-                    {row.label}
-                  </span>
-                  <span className="col-span-4 md:col-span-4 text-sm text-muted">
-                    {row.note}
-                  </span>
-                  <span
-                    aria-hidden
-                    className="col-span-12 md:col-span-1 text-right text-accent transition-transform duration-300 ease-editorial group-hover:translate-x-1"
-                  >
-                    →
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
         </div>
       </section>
     </>
