@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 html {
@@ -25,7 +25,6 @@ html {
 
 body {
   font-family: var(--font-sans), system-ui, sans-serif;
-  font-feature-settings: "ss01", "cv11";
   line-height: 1.65;
 }
 
@@ -42,12 +41,28 @@ h4 {
     @apply mx-auto w-full max-w-editorial px-gutter;
   }
 
-  .section-number {
-    @apply font-sans text-xs uppercase tracking-[0.2em] text-muted;
+  .eyebrow {
+    @apply font-sans text-xs uppercase tracking-luxe text-gold-deep;
+  }
+
+  .gold-text {
+    @apply bg-gold-sheen bg-clip-text text-transparent;
+  }
+
+  .gold-rule {
+    @apply h-px w-full bg-gradient-to-r from-transparent via-gold to-transparent;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-ink px-7 py-3 text-sm font-medium uppercase tracking-[0.12em] text-ivory transition-all duration-300 ease-editorial hover:bg-charcoal disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .btn-gold {
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-gold bg-transparent px-7 py-3 text-sm font-medium uppercase tracking-[0.12em] text-gold-deep transition-all duration-300 ease-editorial hover:bg-gold hover:text-ivory disabled:cursor-not-allowed disabled:opacity-50;
   }
 
   .link-underline {
-    @apply relative inline-block text-accent transition-colors duration-300 ease-editorial;
+    @apply relative inline-block transition-colors duration-300 ease-editorial;
     background-image: linear-gradient(currentColor, currentColor);
     background-size: 0% 1px;
     background-repeat: no-repeat;
@@ -64,7 +79,15 @@ h4 {
     @apply transition-all duration-500 ease-editorial;
   }
   .card-hover:hover {
-    transform: translateY(-2px);
+    transform: translateY(-3px);
+  }
+
+  .field {
+    @apply w-full rounded-lg border border-sand bg-white px-4 py-3 text-sm text-ink outline-none transition placeholder:text-stone focus:border-gold focus:ring-2 focus:ring-gold/20;
+  }
+
+  .label {
+    @apply mb-1.5 block text-xs font-medium uppercase tracking-[0.1em] text-charcoal;
   }
 
   .reveal {
@@ -93,12 +116,12 @@ h4 {
   height: 10px;
 }
 ::-webkit-scrollbar-track {
-  background: #0e0e10;
+  background: #f6f1e7;
 }
 ::-webkit-scrollbar-thumb {
-  background: #2a2a2f;
+  background: #d9cdaf;
   border-radius: 8px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #3a3a41;
+  background: #c9a94a;
 }

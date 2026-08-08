@@ -1,174 +1,146 @@
-# Sambhav Mehta — Personal Website
+# Sanskriti Clothing
 
-A creative, gallery-forward portfolio built for `sambhavm.com`. Next.js (App
-Router) · TypeScript · Tailwind CSS.
+A boutique storefront + private inventory studio for **Sanskriti Clothing** —
+handcrafted kurtas, bandhgalas, sherwanis and more. Ivory-and-gold theme,
+story-forward home page, full browsing engine, customer accounts, and an
+internal admin dashboard for inventory, orders, and spreadsheet exports.
 
-## Run locally
+Next.js (App Router) · TypeScript · Tailwind CSS · Prisma · SQLite (dev) /
+Postgres (prod).
 
-```bash
-npm install
-npm run dev
-```
+---
 
-Then open http://localhost:3000.
-
-Other scripts:
+## Quick start
 
 ```bash
-npm run build    # production build
-npm run start    # serve the production build
-npm run lint     # next lint
+npm install            # installs deps + generates the Prisma client
+cp .env.example .env   # then edit the values (see below)
+npm run db:push        # create the database tables
+npm run db:seed        # load categories, sample products, and your admin login
+npm run dev            # http://localhost:3000
 ```
 
-## Where to edit content and images
+### Environment variables (`.env`)
 
-- **All copy** lives in [`data/content.ts`](./data/content.ts). Hero, work
-  entries, projects, skills, awards, gallery captions — edit them there
-  without touching components.
-- **Nav links** — same file (`site`, `navLinks`, `socials`).
-- **"Currently" strip** — `hero.currentlyItems` in `data/content.ts` (rotates
-  every ~2.5s; keep phrasing parallel).
-- **Internship case studies** — all three interactive one-pagers (MongoDB, GI
-  Partners, Alumni Ventures) live in
-  [`data/caseStudies.ts`](./data/caseStudies.ts) as typed data. Edit stats,
-  pain points, sprints, KPIs, tradeoffs there — the components render whatever
-  you put in.
-- **Fonts** — swap in `app/layout.tsx` (currently Fraunces + Inter via
-  `next/font/google`).
-- **Theme tokens** — palette, type scale, spacing, easings in
-  [`tailwind.config.ts`](./tailwind.config.ts).
-- **Global styles / reveal animation** — [`app/globals.css`](./app/globals.css).
+| Variable | What it is |
+| --- | --- |
+| `DATABASE_URL` | `file:./dev.db` for local SQLite. For production, a Postgres URL. |
+| `AUTH_SECRET` | Long random string for signing login cookies. `openssl rand -base64 32`. |
+| `ADMIN_EMAIL` | The email for **your** admin login (the only account that can reach `/admin`). |
+| `ADMIN_PASSWORD` | Your admin password. Seeded on `npm run db:seed`. |
+| `ADMIN_NAME` | Display name in the studio. |
 
-## Assets you still need to add
+> After changing `ADMIN_EMAIL`/`ADMIN_PASSWORD`, run `npm run db:seed` again to
+> apply them (this rebuilds the sample catalog too).
 
-Drop these files into `/public/`. Until you do, the site renders tasteful gray
-placeholders in the correct aspect ratios, so nothing looks broken.
+---
 
-| Path | Used by | Notes |
-| ---- | ------- | ----- |
-| `/public/hero.jpg` | Home hero portrait | 4:5 portrait works best. |
-| `/public/resume.pdf` | Nav "Résumé ↗" link | Filename must be exactly `resume.pdf`. |
-| `/public/gallery/01.jpg` … `12.jpg` | Gallery → **Photography** tab | Any mix of orientations; masonry layout. Names must be `01.jpg`–`12.jpg`. |
-| `/public/art/01.jpg` … `12.jpg` | Gallery → **Art** tab | Your drawings. `.jpg` or `.png` both work. Names `01`–`12`. |
+## The two halves of the site
 
-To add **more** images, extend the `gallery` or `art` arrays in
-`data/content.ts` and drop matching files into the folder. To add captions,
-set the `caption` field on any entry.
+### 1. Consumer storefront (what shoppers see)
 
-Optional Open Graph image: add `/public/og.jpg` and reference it in
-`app/layout.tsx`'s `metadata.openGraph.images`.
+- **Home** (`/`) — the story, latest pieces, real customer reviews, category
+  and collection entry points, floating WhatsApp + Facebook buttons.
+- **Shop** (`/shop`) — the full browsing engine: search bar, category sidebar,
+  "Ready to Ship" filter, and sorting. Deep-links like `/shop?category=sherwanis`.
+- **Product** (`/product/[slug]`) — gallery, size + quantity selector, add to
+  cart, add to wishlist, and an "Ask on WhatsApp" button.
+- **Collections** (`/collections/[slug]`) — Love All FW26, Benaras, Pichhwai, etc.
+- **Our Story** (`/our-story`), **Contact** (`/contact`), **Celebrity Closet**.
+- **Account** — log in / sign up, **Cart**, **Wishlist**, and **Order history**.
+- **Checkout** places an order and opens **WhatsApp** pre-filled with the order,
+  so customers confirm with you directly (no card processor required).
 
-## Adding photos & art — WITHOUT going through this chat
+### 2. Internal studio (just for you — `/admin`)
 
-Images belong in the git repo, not in a chat window. Uploading them to a
-conversation doesn't put them on the site and just burns context. The right
-flow, all on your Mac:
+Protected by your admin login. Visit `/admin/login`.
+
+- **Dashboard** — KPIs (products, units in stock, inventory value, revenue),
+  pending-order and out-of-stock alerts, revenue-by-month, stock-by-category,
+  best-sellers, and a low-stock restock list.
+- **Products** — add / edit / delete kurtas with description, story, fabric,
+  colour, care, pricing, per-size stock, images, collection, and flags
+  (Featured / New / Draft).
+- **Orders** — see every order; changing status to **Confirmed / Shipped /
+  Fulfilled** automatically **reduces inventory**, and **Cancelled** restores it.
+- **Export** — one-click **CSV** download of full inventory (per size, with
+  stock value) or the order log. Opens in Excel / Google Sheets.
+
+**Default seeded logins**
+
+- Admin: the `ADMIN_EMAIL` / `ADMIN_PASSWORD` from your `.env`.
+- Demo customer: `customer@example.com` / `password123`.
+
+---
+
+## Adding real product photos
+
+Each product takes a list of **image URLs** in the admin form (first image is the
+cover). Paste links from your Facebook page, a CDN, or any public host. Until a
+product has an image, the site shows a tasteful on-brand placeholder, so nothing
+ever looks broken.
+
+> For a fully managed image-upload experience in production, wire the admin
+> "Add image URL" field to a blob store (Vercel Blob / Cloudinary / S3). The
+> data model already stores images as URLs, so no schema change is needed.
+
+---
+
+## Deploying to production (Vercel + Postgres)
+
+SQLite is perfect for local development but does not persist on serverless
+hosts. For production:
+
+1. Create a free Postgres database (Supabase or Neon).
+2. In `prisma/schema.prisma`, change the datasource provider:
+   ```prisma
+   datasource db {
+     provider = "postgresql"
+     url      = env("DATABASE_URL")
+   }
+   ```
+3. Set the Vercel env vars: `DATABASE_URL` (the Postgres URL), `AUTH_SECRET`,
+   `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `ADMIN_NAME`.
+4. Run once against the prod DB: `npx prisma db push` then `npm run db:seed`
+   (or seed manually).
+5. Deploy. The build runs `prisma generate && next build` automatically.
+
+### Store settings
+
+Brand contact details (WhatsApp number, Facebook URL, email, currency) live in
+[`data/site.ts`](./data/site.ts). Categories and collections that drive the
+navigation live in [`data/catalog.ts`](./data/catalog.ts).
+
+---
+
+## Scripts
 
 ```bash
-cd ~/PersonalWebsite
-git checkout claude/portfolio-website-setup-7ozeh2
-git pull                          # get the latest code
-
-# add your files (Finder drag-and-drop into these folders also works):
-#   public/gallery/01.jpg … 12.jpg   (photography)
-#   public/art/01.jpg … 12.jpg       (drawings)
-#   public/hero.jpg, public/resume.pdf
-
-npm run dev                       # preview at localhost:3000, tweak as needed
-
-git add public
-git commit -m "Add photos, art, hero, and resume"
-git push
+npm run dev        # dev server
+npm run build      # prisma generate + production build
+npm run start      # serve the production build
+npm run db:push    # sync schema to the database
+npm run db:seed    # seed categories, products, admin
+npm run db:reset   # wipe + reseed (destructive)
+npm run db:studio  # visual database browser
 ```
-
-That's it — once deployed on Vercel, every push rebuilds the live site with
-your images. No file-size or count limits from the chat, and nothing to
-re-upload here. Tips: keep each image roughly < 1–2 MB (Next.js optimizes them
-at build), and you can batch-rename in Finder (select all → right-click →
-Rename) to get the `01.jpg … 12.jpg` sequence quickly.
-
-## Deploy on Vercel
-
-1. Push this branch to GitHub (already tracked as
-   `claude/portfolio-website-setup-7ozeh2`) and open a PR into `main`.
-2. Sign in at https://vercel.com with your GitHub account and click
-   **Add New → Project**.
-3. Import this repo. Vercel auto-detects Next.js — leave build settings at
-   the defaults (`next build`, output `.next`).
-4. Click **Deploy**. The first build takes ~1 minute; you'll get a
-   `*.vercel.app` URL to preview.
-
-### Connect the `sambhavm.com` domain
-
-1. In the Vercel project, go to **Settings → Domains**.
-2. Add `sambhavm.com` and `www.sambhavm.com`. Vercel picks one as the
-   canonical and 308-redirects the other — either choice is fine.
-3. In your registrar's DNS panel, add the records Vercel shows you:
-   - `A` record on `@` → `76.76.21.21`
-   - `CNAME` on `www` → `cname.vercel-dns.com`
-   (Always use the exact values Vercel displays for your project.)
-4. Wait for DNS propagation (usually minutes, up to a few hours). Vercel
-   auto-provisions the TLS certificate — no manual step needed.
-5. Set the **Production Branch** under **Settings → Git** to `main` (or
-   whichever branch you want auto-deploying to `sambhavm.com`).
-
-### Environment variables
-
-None required — the site is fully static. Add any future env vars in
-**Settings → Environment Variables**.
-
-## Theme
-
-- Palette: `#0E0E10` ink, `#F5F1E8` paper, `#FF4D3D` vermilion accent
-  (used sparingly), `#8A8578` warm grey for metadata.
-- Type: Fraunces (display serif) + Inter (grotesque body).
-- Motion: scroll-reveal fade/translate, rotating hero word, rotating
-  "Currently" strip, animated stat counters, card hover lift. Fully disabled
-  under `prefers-reduced-motion`.
-
-## Accessibility
-
-- Semantic landmarks (`<header>`, `<nav>`, `<main>`), skip link,
-  keyboard-navigable nav, case-study accordions/steppers, and gallery lightbox
-  (Esc closes, arrows browse), visible focus rings, alt text on every image,
-  respects `prefers-reduced-motion`.
-
-## Pages
-
-- **Home** — hero with rotating descriptor + rotating "Currently" strip.
-- **Work** — one long scroll: three interactive case studies (MongoDB, GI
-  Partners, Alumni Ventures) rebuilt from the one-pagers, plus a compact
-  Admit AI entry. Each has animated stat counters, tap-to-expand pain points,
-  an interactive sprint stepper, and a Goal-vs-Result KPI panel (GI Partners
-  also has an interactive RAG pipeline diagram).
-- **Projects** — Diamond Consulting, Blue Origin, awards.
-- **Skills** — grouped toolkit grid.
-- **Gallery** — Photography / Art tabs, masonry grid + keyboard lightbox.
-- **About** — the story, plus a link into the gallery.
 
 ## Project structure
 
 ```
 app/
-  layout.tsx         # fonts, metadata, nav shell (no footer)
-  globals.css        # Tailwind layers, reveal + reduced-motion
-  page.tsx           # Home
-  work/page.tsx      # 01 / Work — long-scroll case studies
-  projects/page.tsx  # 02 / Projects & Leadership
-  skills/page.tsx    # 03 / Toolkit
-  gallery/page.tsx   # 05 / Gallery — Photography + Art tabs
-  about/page.tsx     # 04 / About
-components/
-  Nav.tsx, SectionHeader.tsx, HeroImage.tsx
-  RotatingWord.tsx, CurrentlyStrip.tsx, SocialIcons.tsx
-  Gallery.tsx, GalleryTabs.tsx   # masonry + keyboard lightbox + tabs
-  RevealProvider.tsx             # IntersectionObserver scroll-reveal
-  case-study/
-    CaseStudy.tsx    # composes the interactive one-pager sections
-    useCountUp.ts    # animated, reduced-motion-aware counters
-data/
-  content.ts         # ← edit site copy, nav, gallery/art lists here
-  caseStudies.ts     # ← edit the three internship case studies here
-public/
-  favicon.svg        # (add hero.jpg, resume.pdf, gallery/*, art/*)
+  page.tsx                 Home (story, reviews, latest, collections)
+  shop/                    Browsing engine (search + filters + sort)
+  product/[slug]/          Product detail
+  collections/[slug]/      Collection pages
+  our-story, contact, celebrity-closet
+  login, signup            Customer auth
+  cart, wishlist, account  Customer area (account/orders too)
+  admin/                   Studio: dashboard, products, orders (protected)
+  api/                     auth, cart, wishlist, checkout, admin/*
+components/                Nav, Footer, ProductCard, AddToCart, admin/*
+data/                      site.ts, catalog.ts, reviews.ts
+lib/                       prisma, auth, queries, admin-stats
+prisma/                    schema.prisma, seed.ts
+middleware.ts              Guards /admin and /account
 ```
