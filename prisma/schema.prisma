@@ -1,15 +1,17 @@
 // Sanskriti Clothing — data model
-// Dev uses SQLite (zero setup). For production on Vercel, switch the
-// datasource provider to "postgresql" and point DATABASE_URL at a managed
-// Postgres (Supabase / Neon). No model changes required.
+// Runs on Postgres (managed: Neon / Supabase / Vercel Postgres).
+//   DATABASE_URL = the app connection string (pooled is fine)
+//   DIRECT_URL   = a direct (non-pooled) connection, used for migrations
+// If your provider only gives one URL, set DIRECT_URL to the same value.
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {

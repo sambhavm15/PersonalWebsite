@@ -3,6 +3,8 @@ import ProductCard from "@/components/ProductCard";
 import { getFeatured } from "@/lib/queries";
 import { ArrowRight } from "@/components/icons";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Celebrity Closet · Sanskriti Clothing",
   description: "The pieces our best-dressed customers keep coming back to.",

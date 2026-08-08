@@ -5,16 +5,18 @@ handcrafted kurtas, bandhgalas, sherwanis and more. Ivory-and-gold theme,
 story-forward home page, full browsing engine, customer accounts, and an
 internal admin dashboard for inventory, orders, and spreadsheet exports.
 
-Next.js (App Router) · TypeScript · Tailwind CSS · Prisma · SQLite (dev) /
-Postgres (prod).
+Next.js (App Router) · TypeScript · Tailwind CSS · Prisma · Postgres.
 
 ---
 
 ## Quick start
 
+You need a Postgres database (free: [Neon](https://neon.tech) or
+[Supabase](https://supabase.com)). Create one, then:
+
 ```bash
 npm install            # installs deps + generates the Prisma client
-cp .env.example .env   # then edit the values (see below)
+cp .env.example .env   # then paste your DB URLs + set the values below
 npm run db:push        # create the database tables
 npm run db:seed        # load categories, sample products, and your admin login
 npm run dev            # http://localhost:3000
@@ -24,7 +26,8 @@ npm run dev            # http://localhost:3000
 
 | Variable | What it is |
 | --- | --- |
-| `DATABASE_URL` | `file:./dev.db` for local SQLite. For production, a Postgres URL. |
+| `DATABASE_URL` | Postgres app connection string (pooled is fine). |
+| `DIRECT_URL` | Direct (non-pooled) connection, used for migrations. If you only have one URL, set this to the same value. |
 | `AUTH_SECRET` | Long random string for signing login cookies. `openssl rand -base64 32`. |
 | `ADMIN_EMAIL` | The email for **your** admin login (the only account that can reach `/admin`). |
 | `ADMIN_PASSWORD` | Your admin password. Seeded on `npm run db:seed`. |
@@ -86,24 +89,28 @@ ever looks broken.
 
 ---
 
-## Deploying to production (Vercel + Postgres)
+## Deploying to production (Vercel + Neon)
 
-SQLite is perfect for local development but does not persist on serverless
-hosts. For production:
+The app is already Postgres-ready. Full walkthrough:
 
-1. Create a free Postgres database (Supabase or Neon).
-2. In `prisma/schema.prisma`, change the datasource provider:
-   ```prisma
-   datasource db {
-     provider = "postgresql"
-     url      = env("DATABASE_URL")
-   }
+1. **Create the database.** Sign up at [neon.tech](https://neon.tech) → create a
+   project. Copy both connection strings from the dashboard: the **pooled** one
+   (has `-pooler` in the host) and the **direct** one.
+2. **Set up the tables locally, once.** In your local `.env`, set
+   `DATABASE_URL` = pooled string and `DIRECT_URL` = direct string, then run:
+   ```bash
+   npm run db:push     # creates the tables
+   npm run db:seed     # loads categories, sample products, and your admin login
    ```
-3. Set the Vercel env vars: `DATABASE_URL` (the Postgres URL), `AUTH_SECRET`,
-   `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `ADMIN_NAME`.
-4. Run once against the prod DB: `npx prisma db push` then `npm run db:seed`
-   (or seed manually).
-5. Deploy. The build runs `prisma generate && next build` automatically.
+3. **Import to Vercel.** At [vercel.com](https://vercel.com) → Add New → Project
+   → import `sanskriti-clothing`. Vercel auto-detects Next.js.
+4. **Add the env vars** in Vercel (Settings → Environment Variables):
+   `DATABASE_URL`, `DIRECT_URL`, `AUTH_SECRET`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`,
+   `ADMIN_NAME` — the same values as your local `.env`.
+5. **Deploy.** The build runs `prisma generate && next build` automatically. No
+   page touches the database at build time, so the deploy succeeds even before
+   the first request.
+6. (Optional) Add your custom domain under Settings → Domains.
 
 ### Store settings
 

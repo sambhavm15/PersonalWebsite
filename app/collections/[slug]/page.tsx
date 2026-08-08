@@ -1,13 +1,10 @@
 import { notFound } from "next/navigation";
 import ProductCard from "@/components/ProductCard";
 import { getProducts } from "@/lib/queries";
-import { collectionBySlug, collections } from "@/data/catalog";
+import { collectionBySlug } from "@/data/catalog";
 
+// Rendered on demand so the build never needs the database.
 export const dynamic = "force-dynamic";
-
-export function generateStaticParams() {
-  return collections.map((c) => ({ slug: c.slug }));
-}
 
 export default async function CollectionPage({
   params,

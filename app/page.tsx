@@ -5,6 +5,8 @@ import { getFeatured, getNewArrivals } from "@/lib/queries";
 import { clothingCategories, collections } from "@/data/catalog";
 import { reviews } from "@/data/reviews";
 
+export const dynamic = "force-dynamic";
+
 export default async function HomePage() {
   const [featured, newArrivals] = await Promise.all([
     getFeatured(4),
