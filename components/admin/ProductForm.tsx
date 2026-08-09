@@ -1,8 +1,29 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { clothingCategories, collections, sizesByType } from "@/data/catalog";
+
+// Shrink a photo to a sensible web size before upload — keeps files small,
+// the storefront fast, and stays well under upload limits.
+async function resizeImage(file: File, maxDim = 1600, quality = 0.85): Promise<Blob> {
+  if (!file.type.startsWith("image/")) return file;
+  const bitmap = await createImageBitmap(file).catch(() => null);
+  if (!bitmap) return file;
+  const scale = Math.min(1, maxDim / Math.max(bitmap.width, bitmap.height));
+  const w = Math.round(bitmap.width * scale);
+  const h = Math.round(bitmap.height * scale);
+  const canvas = document.createElement("canvas");
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return file;
+  ctx.drawImage(bitmap, 0, 0, w, h);
+  const blob: Blob | null = await new Promise((res) =>
+    canvas.toBlob(res, "image/jpeg", quality)
+  );
+  return blob ?? file;
+}
 
 type VariantRow = { size: string; stock: number; sku?: string };
 type ImageRow = { url: string; alt?: string };
@@ -50,6 +71,10 @@ export default function ProductForm({ initial }: { initial?: ProductFormValues }
   const [v, setV] = useState<ProductFormValues>(initial ?? empty);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [dragOver, setDragOver] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   function set<K extends keyof ProductFormValues>(key: K, value: ProductFormValues[K]) {
     setV((prev) => ({ ...prev, [key]: value }));
@@ -84,6 +109,35 @@ export default function ProductForm({ initial }: { initial?: ProductFormValues }
   }
   function removeImage(i: number) {
     setV((prev) => ({ ...prev, images: prev.images.filter((_, idx) => idx !== i) }));
+  }
+
+  async function handleFiles(files: FileList | File[]) {
+    const list = Array.from(files).filter((f) => f.type.startsWith("image/"));
+    if (list.length === 0) return;
+    setUploadError(null);
+    setUploading(true);
+    try {
+      for (const file of list) {
+        const resized = await resizeImage(file);
+        const fd = new FormData();
+        // keep a .jpg name since we re-encode to jpeg
+        const name = file.name.replace(/\.[^.]+$/, "") + ".jpg";
+        fd.append("file", new File([resized], name, { type: "image/jpeg" }));
+        const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          setUploadError(data.error ?? "Upload failed.");
+          continue;
+        }
+        setV((prev) => ({
+          ...prev,
+          images: [...prev.images, { url: data.url, alt: "" }],
+        }));
+      }
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
   }
 
   async function submit(e: React.FormEvent) {
@@ -179,23 +233,91 @@ export default function ProductForm({ initial }: { initial?: ProductFormValues }
 
         <Card title="Images">
           <p className="mb-3 text-sm text-stone">
-            Paste image URLs (from Facebook, a CDN, or any public link). The first
-            image is the cover. Leave empty to use a branded placeholder.
+            Drag photos in or click to choose from your computer. The first image
+            is the cover. Photos are resized automatically. Leave empty to use a
+            branded placeholder.
           </p>
-          <div className="space-y-3">
-            {v.images.map((img, i) => (
-              <div key={i} className="flex gap-2">
-                <input className="field" placeholder="https://…/image.jpg" value={img.url} onChange={(e) => setImage(i, { url: e.target.value })} />
-                <input className="field max-w-[40%]" placeholder="Alt text" value={img.alt ?? ""} onChange={(e) => setImage(i, { alt: e.target.value })} />
-                <button type="button" onClick={() => removeImage(i)} className="shrink-0 rounded-lg border border-sand px-3 text-sm text-stone hover:text-red-600">
-                  ✕
-                </button>
-              </div>
-            ))}
-            <button type="button" onClick={addImage} className="btn-gold py-2 text-xs">
-              + Add image URL
-            </button>
+
+          {/* Drop zone */}
+          <div
+            onDragOver={(e) => {
+              e.preventDefault();
+              setDragOver(true);
+            }}
+            onDragLeave={() => setDragOver(false)}
+            onDrop={(e) => {
+              e.preventDefault();
+              setDragOver(false);
+              if (e.dataTransfer.files?.length) handleFiles(e.dataTransfer.files);
+            }}
+            onClick={() => fileInputRef.current?.click()}
+            className={`flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed px-4 py-8 text-center transition ${
+              dragOver ? "border-gold bg-gold/5" : "border-sand bg-cream/40 hover:border-gold"
+            }`}
+          >
+            <svg viewBox="0 0 24 24" className="mb-2 h-8 w-8 text-gold" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 16V4m0 0L8 8m4-4 4 4" />
+              <path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
+            </svg>
+            <p className="text-sm font-medium text-charcoal">
+              {uploading ? "Uploading…" : "Drop photos here or click to upload"}
+            </p>
+            <p className="mt-1 text-xs text-stone">JPG, PNG or WEBP — you can select several at once</p>
           </div>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            multiple
+            className="hidden"
+            onChange={(e) => e.target.files && handleFiles(e.target.files)}
+          />
+          {uploadError && <p className="mt-2 text-sm text-red-600">{uploadError}</p>}
+
+          {/* Thumbnails */}
+          {v.images.length > 0 && (
+            <div className="mt-4 grid grid-cols-3 gap-3">
+              {v.images.map((img, i) => (
+                <div key={i} className="group relative aspect-square overflow-hidden rounded-lg border border-sand bg-cream">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={img.url} alt={img.alt ?? ""} className="h-full w-full object-cover" />
+                  {i === 0 && (
+                    <span className="absolute left-1 top-1 rounded bg-ink/80 px-1.5 py-0.5 text-[9px] uppercase tracking-wide text-ivory">
+                      Cover
+                    </span>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => removeImage(i)}
+                    aria-label="Remove image"
+                    className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-white/90 text-sm text-stone shadow transition hover:text-red-600"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* URL fallback */}
+          <details className="mt-4">
+            <summary className="cursor-pointer text-xs text-stone hover:text-charcoal">
+              Or paste an image URL instead
+            </summary>
+            <div className="mt-3 space-y-3">
+              {v.images.map((img, i) => (
+                <div key={i} className="flex gap-2">
+                  <input className="field" placeholder="https://…/image.jpg" value={img.url} onChange={(e) => setImage(i, { url: e.target.value })} />
+                  <button type="button" onClick={() => removeImage(i)} className="shrink-0 rounded-lg border border-sand px-3 text-sm text-stone hover:text-red-600">
+                    ✕
+                  </button>
+                </div>
+              ))}
+              <button type="button" onClick={addImage} className="btn-gold py-2 text-xs">
+                + Add image URL
+              </button>
+            </div>
+          </details>
         </Card>
       </div>
 

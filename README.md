@@ -76,16 +76,23 @@ Protected by your admin login. Visit `/admin/login`.
 
 ---
 
-## Adding real product photos
+## Adding product photos
 
-Each product takes a list of **image URLs** in the admin form (first image is the
-cover). Paste links from your Facebook page, a CDN, or any public host. Until a
-product has an image, the site shows a tasteful on-brand placeholder, so nothing
-ever looks broken.
+The admin product form has a **drag-and-drop uploader** — drag photos in (or
+click to choose), and they're resized and stored automatically. The first image
+is the cover. You can also paste an image URL instead (under "Or paste an image
+URL"). Until a product has an image, the site shows a tasteful on-brand
+placeholder, so nothing ever looks broken.
 
-> For a fully managed image-upload experience in production, wire the admin
-> "Add image URL" field to a blob store (Vercel Blob / Cloudinary / S3). The
-> data model already stores images as URLs, so no schema change is needed.
+Uploads use **Vercel Blob**. To enable them:
+
+1. In your Vercel project → **Storage** → **Create Database** → **Blob** → create
+   the store and connect it to the project.
+2. Vercel automatically adds a `BLOB_READ_WRITE_TOKEN` env var. Redeploy.
+3. For local development, copy that token into your `.env`.
+
+Without the token the site still runs — the uploader just shows a message and you
+can paste image URLs instead.
 
 ---
 
