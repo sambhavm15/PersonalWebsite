@@ -13,7 +13,7 @@ export const site = {
   email: "hello@sanskriticlothing.com",
   currency: "USD",
   currencySymbol: "$",
-  foundedCity: "Indore, India",
+  foundedCity: "Fremont, California",
 };
 
 /** Build a pre-filled WhatsApp deep link. */

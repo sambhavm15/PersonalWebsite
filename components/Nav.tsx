@@ -15,6 +15,7 @@ import {
   HeartIcon,
   BagIcon,
   WhatsAppIcon,
+  FacebookIcon,
   ChevronDown,
 } from "@/components/icons";
 
@@ -128,6 +129,9 @@ export default function Nav() {
           className="hidden items-center gap-8 lg:flex"
           onMouseLeave={() => setMega(false)}
         >
+          <Link href="/our-story" className="text-sm uppercase tracking-[0.14em] text-charcoal transition hover:text-gold-deep">
+            Our Story
+          </Link>
           <button
             className="flex items-center gap-1 py-2 text-sm uppercase tracking-[0.14em] text-charcoal transition hover:text-gold-deep"
             onMouseEnter={() => setMega(true)}
@@ -139,9 +143,6 @@ export default function Nav() {
           <Link href="/shop" className="text-sm uppercase tracking-[0.14em] text-charcoal transition hover:text-gold-deep">
             Shop All
           </Link>
-          <Link href="/our-story" className="text-sm uppercase tracking-[0.14em] text-charcoal transition hover:text-gold-deep">
-            Our Story
-          </Link>
           <Link href="/contact" className="text-sm uppercase tracking-[0.14em] text-charcoal transition hover:text-gold-deep">
             Contact
           </Link>
@@ -149,19 +150,23 @@ export default function Nav() {
 
         {/* right icons */}
         <div className="flex items-center gap-3 text-charcoal sm:gap-4">
-          <button aria-label="Search" onClick={() => setSearchOpen((v) => !v)} className="transition hover:text-gold-deep">
-            <SearchIcon />
-          </button>
+          <Tip label="Search">
+            <button aria-label="Search" onClick={() => setSearchOpen((v) => !v)} className="block transition hover:text-gold-deep">
+              <SearchIcon />
+            </button>
+          </Tip>
 
           {/* account */}
           <div className="relative">
-            <button
-              aria-label="Account"
-              onClick={() => setAcctOpen((v) => !v)}
-              className="transition hover:text-gold-deep"
-            >
-              <UserIcon />
-            </button>
+            <Tip label="Account">
+              <button
+                aria-label="Account"
+                onClick={() => setAcctOpen((v) => !v)}
+                className="block transition hover:text-gold-deep"
+              >
+                <UserIcon />
+              </button>
+            </Tip>
             {acctOpen && (
               <div className="absolute right-0 top-8 z-50 w-52 rounded-xl border border-sand bg-white p-2 shadow-xl">
                 {me.user ? (
@@ -199,25 +204,43 @@ export default function Nav() {
             )}
           </div>
 
-          <Link href="/wishlist" aria-label="Wishlist" className="relative transition hover:text-gold-deep">
-            <HeartIcon />
-            {me.wishlist > 0 && <Badge n={me.wishlist} />}
-          </Link>
+          <Tip label="Favorites">
+            <Link href="/wishlist" aria-label="Favorites" className="relative block transition hover:text-gold-deep">
+              <HeartIcon />
+              {me.wishlist > 0 && <Badge n={me.wishlist} />}
+            </Link>
+          </Tip>
 
-          <Link href="/cart" aria-label="Cart" className="relative transition hover:text-gold-deep">
-            <BagIcon />
-            {me.cart > 0 && <Badge n={me.cart} />}
-          </Link>
+          <Tip label="Cart">
+            <Link href="/cart" aria-label="Cart" className="relative block transition hover:text-gold-deep">
+              <BagIcon />
+              {me.cart > 0 && <Badge n={me.cart} />}
+            </Link>
+          </Tip>
 
-          <a
-            href={`https://wa.me/${site.whatsappNumber}`}
-            target="_blank"
-            rel="noreferrer"
-            aria-label="WhatsApp us"
-            className="hidden text-[#25D366] transition hover:opacity-80 sm:block"
-          >
-            <WhatsAppIcon />
-          </a>
+          <Tip label="WhatsApp">
+            <a
+              href={`https://wa.me/${site.whatsappNumber}`}
+              target="_blank"
+              rel="noreferrer"
+              aria-label="WhatsApp us"
+              className="hidden text-[#25D366] transition hover:opacity-80 sm:block"
+            >
+              <WhatsAppIcon />
+            </a>
+          </Tip>
+
+          <Tip label="Facebook">
+            <a
+              href={site.facebookUrl}
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Our Facebook"
+              className="hidden text-[#1877F2] transition hover:opacity-80 sm:block"
+            >
+              <FacebookIcon />
+            </a>
+          </Tip>
         </div>
       </div>
 
@@ -296,6 +319,18 @@ export default function Nav() {
         </div>
       )}
     </header>
+  );
+}
+
+// Hover label shown under an icon (also sets a native title for accessibility).
+function Tip({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <span className="group relative inline-flex" title={label}>
+      {children}
+      <span className="pointer-events-none absolute left-1/2 top-full z-50 mt-2 -translate-x-1/2 whitespace-nowrap rounded-md bg-ink px-2 py-1 text-[10px] font-medium uppercase tracking-[0.12em] text-ivory opacity-0 shadow-lg transition-opacity duration-200 group-hover:opacity-100">
+        {label}
+      </span>
+    </span>
   );
 }
 

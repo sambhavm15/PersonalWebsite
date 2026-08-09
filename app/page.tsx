@@ -19,7 +19,7 @@ export default async function HomePage() {
       <section className="relative overflow-hidden bg-cream">
         <div className="container-editorial grid items-center gap-10 py-20 md:grid-cols-2 md:py-28">
           <div className="reveal">
-            <p className="eyebrow">Est. in a weaving family · Indore, India</p>
+            <p className="eyebrow">Handwoven heritage · Fremont, California</p>
             <h1 className="mt-4 font-display text-hero text-ink">
               Heritage weaves,
               <br />

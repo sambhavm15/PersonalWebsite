@@ -18,7 +18,7 @@ export const UserIcon = ({ className = base }: P) => (
 
 export const HeartIcon = ({ className = base, filled = false }: P & { filled?: boolean }) => (
   <svg viewBox="0 0 24 24" fill={filled ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className={className}>
-    <path d="M12 20s-7-4.5-9.5-9C1 8 2.5 4.5 6 4.5c2 0 3.2 1.2 4 2.3.8-1.1 2-2.3 4-2.3 3.5 0 5 3.5 3.5 6.5C19 15.5 12 20 12 20z" />
+    <path d="M12 21c-.3 0-.6-.1-.8-.3l-7.1-6.9a4.9 4.9 0 0 1 0-7 4.9 4.9 0 0 1 7 0l.9.9.9-.9a4.9 4.9 0 0 1 7 0 4.9 4.9 0 0 1 0 7l-7.1 6.9c-.2.2-.5.3-.8.3z" />
   </svg>
 );
 

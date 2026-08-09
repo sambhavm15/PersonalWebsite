@@ -73,7 +73,7 @@ export default function ContactPage() {
         <div className="flex flex-col items-start gap-4 rounded-2xl border border-sand bg-cream p-8">
           <h2 className="font-display text-2xl text-ink">Studio Hours</h2>
           <ul className="space-y-1 text-charcoal">
-            <li>Monday – Saturday · 10am to 7pm IST</li>
+            <li>Monday – Saturday · 10am to 7pm PT</li>
             <li>Sunday · By appointment</li>
           </ul>
           <p className="text-sm text-stone">
