@@ -46,7 +46,7 @@ export default function Nav() {
           <span className="text-accent">.</span>
         </Link>
 
-        <nav aria-label="Primary" className="hidden md:block">
+        <nav aria-label="Primary" className="hidden lg:block">
           <ul className="flex items-center gap-8 text-sm">
             {navLinks.map((link) => {
               const active =
@@ -83,7 +83,7 @@ export default function Nav() {
           aria-expanded={open}
           aria-controls="mobile-nav"
           aria-label={open ? "Close menu" : "Open menu"}
-          className="md:hidden flex h-10 w-10 items-center justify-center rounded border border-paper/10 text-paper"
+          className="lg:hidden flex h-10 w-10 items-center justify-center rounded border border-paper/10 text-paper"
         >
           <span className="sr-only">Menu</span>
           <span aria-hidden className="relative block h-4 w-5">
@@ -108,7 +108,7 @@ export default function Nav() {
 
       <div
         id="mobile-nav"
-        className={`md:hidden overflow-hidden transition-[max-height] duration-500 ease-editorial ${
+        className={`lg:hidden overflow-hidden transition-[max-height] duration-500 ease-editorial ${
           open ? "max-h-[80vh]" : "max-h-0"
         }`}
       >
