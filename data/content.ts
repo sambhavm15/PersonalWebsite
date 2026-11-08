@@ -23,7 +23,16 @@ export type Award = { emoji: string; title: string };
 
 export type SkillGroup = { label: string; items: string[] };
 
-export type GalleryImage = { src: string; caption?: string; alt: string; aspect?: "portrait" | "landscape" | "square" };
+export type GalleryImage = {
+  src: string;
+  caption?: string;
+  alt: string;
+  /** Real pixel size; when set, the tile uses the photo's true aspect ratio. */
+  width?: number;
+  height?: number;
+  /** Fallback shape for placeholder tiles with no real image yet. */
+  aspect?: "portrait" | "landscape" | "square";
+};
 
 export const site = {
   name: "Sambhav Mehta",
@@ -180,29 +189,21 @@ export const about = {
   ],
 };
 
-const galleryAspects: GalleryImage["aspect"][] = [
-  "portrait",
-  "landscape",
-  "square",
-  "landscape",
-  "portrait",
-  "landscape",
-  "square",
-  "portrait",
-  "landscape",
-  "square",
-  "portrait",
-  "landscape",
+// Photography. Files live in /public/gallery/ as web-sized JPGs.
+// width/height are the real pixel sizes so the masonry grid keeps each
+// photo's true shape. To add one: drop NN.jpg in the folder and add a row.
+// `caption` is optional — it shows on hover and in the lightbox.
+export const gallery: GalleryImage[] = [
+  { src: "/gallery/01.jpg", width: 1918, height: 2400, alt: "City avenue at golden hour, crosswalks and traffic below tall buildings" },
+  { src: "/gallery/02.jpg", width: 1800, height: 2400, alt: "A curving highway cutting through green hills under a cloudy sunset" },
+  { src: "/gallery/03.jpg", width: 1800, height: 2400, alt: "Silhouetted profile looking out over trees and water" },
+  { src: "/gallery/04.jpg", width: 1800, height: 2400, alt: "A figure walking up a stone path through a tunnel of trees toward the skyline" },
+  { src: "/gallery/05.jpg", width: 1800, height: 2400, alt: "Sunlight flaring between dark skyscrapers on a narrow city street" },
+  { src: "/gallery/06.jpg", width: 2400, height: 1720, alt: "Quiet beach with footprints in the sand and mountains across the water" },
+  { src: "/gallery/07.jpg", width: 2400, height: 1800, alt: "Palm tree silhouetted against a fiery orange and red sunset" },
+  { src: "/gallery/08.jpg", width: 1800, height: 2400, alt: "Looking up through the curving orange walls of a slot canyon to blue sky" },
+  { src: "/gallery/09.jpg", width: 1800, height: 2400, alt: "Airplane wing over hills and a lake at dusk" },
 ];
-
-export const gallery: GalleryImage[] = Array.from({ length: 12 }, (_, i) => {
-  const n = String(i + 1).padStart(2, "0");
-  return {
-    src: `/gallery/${n}.jpg`,
-    alt: `Photograph ${n}`,
-    aspect: galleryAspects[i] ?? "landscape",
-  };
-});
 
 const artAspects: GalleryImage["aspect"][] = [
   "portrait",
