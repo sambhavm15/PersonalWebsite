@@ -48,7 +48,8 @@ export const navLinks: NavLink[] = [
   { label: "Work", href: "/work" },
   { label: "Projects", href: "/projects" },
   { label: "Skills", href: "/skills" },
-  { label: "Gallery", href: "/gallery" },
+  { label: "Photography", href: "/photography" },
+  { label: "Art", href: "/art" },
   { label: "About", href: "/about" },
 ];
 
@@ -205,27 +206,26 @@ export const gallery: GalleryImage[] = [
   { src: "/gallery/09.jpg", width: 1800, height: 2400, alt: "Airplane wing over hills and a lake at dusk" },
 ];
 
-const artAspects: GalleryImage["aspect"][] = [
-  "portrait",
-  "square",
-  "portrait",
-  "landscape",
-  "square",
-  "portrait",
-  "landscape",
-  "square",
-  "portrait",
-  "landscape",
-  "square",
-  "portrait",
+// Drawings & paintings. Files live in /public/art/. width/height are the real
+// pixel sizes. Order here = order on the page. `caption` shows on hover and in
+// the lightbox — edit the title or medium freely.
+export const art: GalleryImage[] = [
+  { src: "/art/bearded-man-watercolor.jpg", width: 1837, height: 2375, caption: "Bearded Man · Watercolor", alt: "Watercolor portrait of an older bearded man in glasses" },
+  { src: "/art/leopard-3.jpg", width: 688, height: 995, caption: "Leopard · Charcoal", alt: "Close-up charcoal drawing of a leopard's face" },
+  { src: "/art/fruit-still-life.jpg", width: 1853, height: 1433, caption: "Fruit Still Life · Color", alt: "Colorful still life of fruit on a plate in front of draped cloth" },
+  { src: "/art/woman-portrait.jpg", width: 1024, height: 1024, caption: "Portrait · Graphite", alt: "Graphite portrait of a woman with her hair pulled back, looking straight ahead" },
+  { src: "/art/german-shepherd.jpg", width: 1786, height: 2312, caption: "German Shepherd · Colored Pencil", alt: "Colored pencil drawing of a German shepherd" },
+  { src: "/art/kettle-and-apple.jpg", width: 762, height: 641, caption: "Kettle & Apple · Charcoal", alt: "Charcoal still life of a glass kettle beside an apple" },
+  { src: "/art/figures-colored-pencil.jpg", width: 741, height: 909, caption: "Figures · Colored Pencil", alt: "Stylized colored pencil drawing of a tall figure in orange with two figures beside" },
+  { src: "/art/seal.jpg", width: 830, height: 655, caption: "Seal Pup · Charcoal", alt: "Charcoal drawing of a seal pup lying down, facing forward" },
+  { src: "/art/promenade-watercolor.jpg", width: 1813, height: 2345, caption: "Promenade · Watercolor", alt: "Watercolor of a waterfront promenade lined with palm trees and reflections" },
+  { src: "/art/portrait-in-shadow.jpg", width: 741, height: 829, caption: "Portrait in Shadow · Charcoal", alt: "Charcoal portrait of a face emerging from a dark background" },
+  { src: "/art/girl-arms-open.jpg", width: 734, height: 1024, caption: "Arms Open · Colored Pencil", alt: "Colored pencil drawing of a young girl from behind with her arms spread wide" },
+  { src: "/art/jug-and-apples.jpg", width: 1797, height: 1388, caption: "Jug & Apples · Pencil", alt: "Pencil still life of a jug with apples on draped cloth" },
+  { src: "/art/bird-lamp.jpg", width: 1596, height: 2065, caption: "Bird Lamp · Pencil", alt: "Pencil drawing of an ornate oil lamp topped with a bird" },
+  { src: "/art/wine-glass-and-brush.jpg", width: 754, height: 932, caption: "Glass & Brush · Charcoal", alt: "Charcoal drawing of a paintbrush resting in a wine glass" },
+  { src: "/art/roses.jpg", width: 1788, height: 2314, caption: "Roses · Pencil", alt: "Pencil drawing of a rose in bloom and a rosebud" },
+  { src: "/art/goblet-still-life.jpg", width: 1353, height: 1751, caption: "Goblet · Pencil", alt: "Pencil drawing of a goblet on draped fabric" },
+  { src: "/art/wine-bottle.jpg", width: 754, height: 910, caption: "Wine Bottle · Charcoal", alt: "Charcoal drawing of a wine bottle on a table" },
+  { src: "/art/man-pencil-portrait.jpg", width: 706, height: 941, caption: "Portrait · Pencil", alt: "Pencil portrait of a man in a collared shirt" },
 ];
-
-// Drawings / art. Files go in /public/art/ as 01.jpg–12.jpg (or .png).
-export const art: GalleryImage[] = Array.from({ length: 12 }, (_, i) => {
-  const n = String(i + 1).padStart(2, "0");
-  return {
-    src: `/art/${n}.jpg`,
-    alt: `Drawing ${n}`,
-    aspect: artAspects[i] ?? "portrait",
-  };
-});

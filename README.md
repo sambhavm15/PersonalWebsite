@@ -48,8 +48,8 @@ placeholders in the correct aspect ratios, so nothing looks broken.
 | ---- | ------- | ----- |
 | `/public/hero.jpg` | Home hero portrait | 4:5 portrait works best. |
 | `/public/resume.pdf` | Nav "Résumé ↗" link | Filename must be exactly `resume.pdf`. |
-| `/public/gallery/01.jpg` … `12.jpg` | Gallery → **Photography** tab | Any mix of orientations; masonry layout. Names must be `01.jpg`–`12.jpg`. |
-| `/public/art/01.jpg` … `12.jpg` | Gallery → **Art** tab | Your drawings. `.jpg` or `.png` both work. Names `01`–`12`. |
+| `/public/gallery/*.jpg` | **Photography** page | Listed in the `gallery` array in `data/content.ts`. |
+| `/public/art/*.jpg` | **Art** page | Listed in the `art` array in `data/content.ts`. |
 
 To add **more** images, extend the `gallery` or `art` arrays in
 `data/content.ts` and drop matching files into the folder. To add captions,
@@ -143,8 +143,9 @@ None required — the site is fully static. Add any future env vars in
   also has an interactive RAG pipeline diagram).
 - **Projects** — Diamond Consulting, Blue Origin, awards.
 - **Skills** — grouped toolkit grid.
-- **Gallery** — Photography / Art tabs, masonry grid + keyboard lightbox.
-- **About** — the story, plus a link into the gallery.
+- **Photography** — masonry grid of photos + keyboard lightbox.
+- **Art** — drawings and paintings, captioned with title and medium.
+- **About** — the story, plus links to Photography and Art.
 
 ## Project structure
 
@@ -156,12 +157,14 @@ app/
   work/page.tsx      # 01 / Work — long-scroll case studies
   projects/page.tsx  # 02 / Projects & Leadership
   skills/page.tsx    # 03 / Toolkit
-  gallery/page.tsx   # 05 / Gallery — Photography + Art tabs
-  about/page.tsx     # 04 / About
+  photography/page.tsx # 04 / Photography
+  art/page.tsx       # 05 / Art
+  about/page.tsx     # 06 / About
+  (/gallery redirects to /photography — see next.config.mjs)
 components/
   Nav.tsx, SectionHeader.tsx, HeroImage.tsx
   RotatingWord.tsx, CurrentlyStrip.tsx, SocialIcons.tsx
-  Gallery.tsx, GalleryTabs.tsx   # masonry + keyboard lightbox + tabs
+  Gallery.tsx                    # masonry grid + keyboard lightbox
   RevealProvider.tsx             # IntersectionObserver scroll-reveal
   case-study/
     CaseStudy.tsx    # composes the interactive one-pager sections

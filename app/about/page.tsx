@@ -12,7 +12,7 @@ export default function AboutPage() {
   return (
     <div className="container-editorial pt-16 pb-24 md:pt-24 md:pb-32">
       <SectionHeader
-        number="04"
+        number="06"
         label="About"
         heading="Beyond the résumé."
         eyebrow="A builder and a maker — with a camera never far away."
@@ -33,19 +33,25 @@ export default function AboutPage() {
             </p>
           ))}
 
-          <div className="reveal mt-10">
-            <Link
-              href="/gallery"
-              className="group inline-flex items-center gap-3 text-accent"
-            >
-              <span className="link-underline">See the photography & art</span>
-              <span
-                aria-hidden
-                className="transition-transform duration-300 ease-editorial group-hover:translate-x-1"
+          <div className="reveal mt-10 flex flex-wrap gap-x-10 gap-y-4">
+            {[
+              { href: "/photography", label: "See the photography" },
+              { href: "/art", label: "See the art" },
+            ].map((l) => (
+              <Link
+                key={l.href}
+                href={l.href}
+                className="group inline-flex items-center gap-3 text-accent"
               >
-                →
-              </span>
-            </Link>
+                <span className="link-underline">{l.label}</span>
+                <span
+                  aria-hidden
+                  className="transition-transform duration-300 ease-editorial group-hover:translate-x-1"
+                >
+                  →
+                </span>
+              </Link>
+            ))}
           </div>
         </div>
 
