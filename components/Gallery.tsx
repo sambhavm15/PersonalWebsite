@@ -62,7 +62,14 @@ export default function Gallery({
               className="group relative block w-full overflow-hidden rounded-sm bg-paper/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             >
               <div
-                className={`${aspectClass[img.aspect ?? "landscape"]} relative w-full`}
+                className={`${
+                  img.width && img.height ? "" : aspectClass[img.aspect ?? "landscape"]
+                } relative w-full`}
+                style={
+                  img.width && img.height
+                    ? { aspectRatio: `${img.width} / ${img.height}` }
+                    : undefined
+                }
               >
                 {hasRealImage[i] ? (
                   <Image
@@ -155,7 +162,11 @@ export default function Gallery({
             className="relative mx-6 max-h-[85vh] w-full max-w-4xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="relative aspect-[3/2] w-full overflow-hidden rounded-sm bg-paper/5">
+            <div
+              className={`relative w-full overflow-hidden rounded-sm ${
+                hasRealImage[active] ? "h-[78vh]" : "aspect-[3/2] bg-paper/5"
+              }`}
+            >
               {hasRealImage[active] ? (
                 <Image
                   src={images[active].src}
@@ -175,7 +186,7 @@ export default function Gallery({
               <span>
                 {String(active + 1).padStart(2, "0")} / {images.length}
               </span>
-              <span>{images[active].caption ?? images[active].alt}</span>
+              {images[active].caption ? <span>{images[active].caption}</span> : null}
             </figcaption>
           </figure>
         </div>
