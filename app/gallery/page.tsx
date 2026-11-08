@@ -35,7 +35,7 @@ export default function GalleryPage() {
       key: "art",
       label: "Art",
       blurb:
-        "Drawings and sketches — whatever sticks. Pen, pencil, and the occasional experiment.",
+        "Drawings and paintings — charcoal, graphite, colored pencil, and watercolor. Hover for the title and medium; click any piece to enlarge.",
       images: art,
       hasRealImage: realFlags(art),
     },
