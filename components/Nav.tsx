@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { navLinks, site } from "@/data/content";
+import { navLinks } from "@/data/content";
 
 export default function Nav() {
   const pathname = usePathname();
@@ -74,16 +74,6 @@ export default function Nav() {
                 </li>
               );
             })}
-            <li>
-              <a
-                href={site.resume}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-muted hover:text-accent uppercase tracking-[0.16em] transition-colors"
-              >
-                Résumé ↗
-              </a>
-            </li>
           </ul>
         </nav>
 
@@ -140,16 +130,6 @@ export default function Nav() {
                 </Link>
               </li>
             ))}
-            <li className="pt-6">
-              <a
-                href={site.resume}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block text-sm uppercase tracking-[0.2em] text-accent"
-              >
-                Résumé ↗
-              </a>
-            </li>
           </ul>
         </nav>
       </div>
